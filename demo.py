@@ -146,7 +146,8 @@ st.title("love in peace")
 if 'current_quote' not in st.session_state:
     st.session_state.current_quote = random.choice(quotes)
 
-if st.button("·"):
+# ✅ 修复1: 为第一个按钮添加唯一 key
+if st.button("·", key="change_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
@@ -173,7 +174,8 @@ st.markdown("""
 # ======================
 st.markdown("<div style='text-align:center; margin:1.5rem 0; color:#a89e95;'>· · ·</div>", unsafe_allow_html=True)
 
-if st.button("· ·"):
+# ✅ 修复2: 为照片按钮添加 key（虽然标签不同，但加 key 更规范）
+if st.button("· ·", key="view_photo"):
     # 检查图片是否存在
     photo_path = "picture/01.jpg"
     if os.path.exists(photo_path):
@@ -187,8 +189,8 @@ if st.button("· ·"):
             unsafe_allow_html=True
         )
 
-# 心跳彩蛋（保留）
-if st.button("·"):
+# ✅ 修复3: 为心跳按钮添加唯一 key（避免和第一个按钮冲突）
+if st.button("·", key="heartbeat"):
     placeholder = st.empty()
     for _ in range(3):
         placeholder.markdown("<div style='text-align:center; font-size:1.2em; color:#a89e95;'>…</div>", unsafe_allow_html=True)
