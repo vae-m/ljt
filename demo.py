@@ -1,7 +1,6 @@
 import streamlit as st
 import random
 import os
-import base64
 
 # ======================
 # 页面配置
@@ -14,113 +13,123 @@ st.set_page_config(
 )
 
 # ======================
-# 读取背景图（Base64 确保云端显示）
+# 检查图片
 # ======================
-bg_image_path = "picture/01.jpg"
-bg_image_b64 = None
-
-if os.path.exists(bg_image_path):
-    try:
-        with open(bg_image_path, "rb") as f:
-            bg_image_b64 = base64.b64encode(f.read()).decode()
-    except:
-        bg_image_b64 = None
+bg_path = "picture/01.jpg"
+image_exists = os.path.exists(bg_path)
 
 # ======================
-# CSS：文字直接叠加在图片上，无白框
+# CSS：图片居中 + 文字叠加（用相对定位）
 # ======================
-if bg_image_b64:
-    bg_style = f"""
-    .stApp {{
-        background-image: url("data:image/jpg;base64,{bg_image_b64}");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        position: relative;
-        color: white; /* 默认文字白色 */
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        line-height: 1.7;
-    }}
+st.markdown(
     """
-else:
-    bg_style = ".stApp { background: #222; color: white; }"
-
-st.markdown(f"""
-<style>
-    {bg_style}
+    <style>
+    /* 隐藏默认元素 */
+    #MainMenu, header, footer {visibility: hidden;}
     
-    #MainMenu, header, footer {{visibility: hidden;}}
-    
-    h1 {{
+    /* 图片容器：居中，保持比例 */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
         text-align: center;
+    }
+    
+    /* 图片样式 */
+    .bg-image {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* 文字叠加层 */
+    .text-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        max-width: 70%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        z-index: 2;
+    }
+    
+    /* 标题 */
+    .title {
         font-weight: 600;
         font-size: 1.8em;
-        color: white;
-        margin: 2rem 0 1.5rem;
-        letter-spacing: 1px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-    }}
+        margin: 0.5rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
     
-    .quote-text {{
+    /* 语录 */
+    .quote {
         font-size: 1.3em;
-        text-align: center;
-        line-height: 1.8;
-        color: white;
-        font-weight: 500;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 1.5rem;
-    }}
+        line-height: 1.7;
+        margin: 1.2rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
     
-    /* 按钮：透明爱心，带阴影 */
-    .stButton > button {{
-        background: transparent;
-        border: none;
-        font-size: 1.6em;
-        color: white;
-        margin: 1.2rem auto;
-        display: block;
-        transition: all 0.25s ease;
-        width: auto;
-        height: auto;
-        padding: 0;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-    }}
-    .stButton > button:hover {{
-        color: #ffcccb;
-        transform: scale(1.2);
-    }}
-    .stButton > button:active {{
-        transform: scale(1.05);
-    }}
-    
-    .personal {{
+    /* 专属文字 */
+    .personal {
         font-size: 1.1em;
-        text-align: center;
-        color: white;
-        font-weight: 500;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 1.5rem;
-    }}
+        margin: 1.2rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
     
-    .footer {{
-        text-align: center;
+    /* 页脚 */
+    .footer {
         color: #ddd;
         font-size: 0.9em;
-        margin-top: 2.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255,255,255,0.3);
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-    }}
-</style>
-""", unsafe_allow_html=True)
+        margin-top: 2rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    
+    /* 按钮 */
+    .stButton > button {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.6em;
+        margin: 1rem auto;
+        display: block;
+        width: auto;
+        padding: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    .stButton > button:hover {
+        color: #ffcccb;
+        transform: scale(1.15);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # ======================
-# 语录库（温柔自然）
+# 主内容
 # ======================
+if image_exists:
+    # 先显示图片（居中）
+    st.image(bg_path, use_container_width=False)  # 保持原始比例
+    
+    # 再叠加文字（用 st.markdown + 绝对定位）
+    st.markdown(
+        """
+        <div class="image-container">
+            <div class="text-overlay">
+                <div class="title">朵朵大王天天开心</div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown('<div style="background:#222; padding:20px; text-align:center; color:white;">', unsafe_allow_html=True)
+
+# 语录库
 quotes = [
     "今天也要开心呀！",
     "你笑起来真好看。",
@@ -132,17 +141,12 @@ quotes = [
     "世界很大，但你很重要。",
     "开心是一种选择，你选对了。",
     "愿你眼里有光，心中有爱。",
-    "平凡的日子，也因你而闪亮。",
+    "平凡的日子，也因你而闪亮.",
     "慢慢来，一切都来得及。",
     "你开心，我就开心。",
     "今天有什么好事发生吗？",
     "你就是你，不需要完美。"
 ]
-
-# ======================
-# 主内容（直接叠加在图片上）
-# ======================
-st.title("朵朵大王天天开心")
 
 # 切换语录
 if 'current_quote' not in st.session_state:
@@ -152,25 +156,17 @@ if st.button("💖", key="next_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
-st.markdown(f"""
-<div class="quote-text">
-    {st.session_state.current_quote}
-</div>
-""", unsafe_allow_html=True)
+st.markdown(f'<div class="quote">{st.session_state.current_quote}</div>', unsafe_allow_html=True)
 
-# 专属文字
-st.markdown("""
-<div class="personal">
-朵朵大王：<br>
-我只是希望你每天都能开开心心的。<br>
-如果累了，就看看这里。<br>
-我一直都在。
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    '<div class="personal">朵朵大王：<br>我只是希望你每天都能开开心心的。<br>如果累了，就看看这里。<br>我一直都在。</div>',
+    unsafe_allow_html=True
+)
 
-# 页脚
-st.markdown("""
-<div class="footer">
-Made for you • 愿你天天开心
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="footer">Made for you • 愿你天天开心</div>', unsafe_allow_html=True)
+
+# 关闭容器
+if image_exists:
+    st.markdown('</div></div>', unsafe_allow_html=True)
+else:
+    st.markdown('</div>', unsafe_allow_html=True)
