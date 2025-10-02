@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import os
+import base64
 
 # ======================
 # 页面配置
@@ -13,131 +14,133 @@ st.set_page_config(
 )
 
 # ======================
-# 主内容：先显示背景图（全屏）
+# 读取背景图
 # ======================
 bg_image_path = "picture/01.jpg"
+bg_image_b64 = None
 
-# 全屏背景图（固定在底层）
 if os.path.exists(bg_image_path):
-    # 使用 st.image 显示背景
-    st.markdown(
-        """
-        <style>
-        .bg-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-        }
-        .overlay {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.88);
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    # 用 st.image 输出图片，并添加 class
-    st.image(bg_image_path, use_column_width=True, caption="")
-    st.markdown('<div class="overlay">', unsafe_allow_html=True)
+    try:
+        with open(bg_image_path, "rb") as f:
+            bg_image_b64 = base64.b64encode(f.read()).decode()
+    except:
+        bg_image_b64 = None
+
+# ======================
+# 构建 CSS（不用外层 f-string！）
+# ======================
+if bg_image_b64:
+    bg_css = f'''
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{bg_image_b64}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+    .content-overlay {{
+        background: rgba(252, 252, 252, 0.93);
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+    }}
+    '''
+    overlay_open = '<div class="content-overlay">'
+    overlay_close = '</div>'
 else:
-    st.markdown('<div style="background:#fcfcfc; min-height:100vh; padding:20px;">', unsafe_allow_html=True)
+    bg_css = ".stApp { background: #fcfcfc; }"
+    overlay_open = ''
+    overlay_close = ''
+
+# ✅ 关键：CSS 模板用普通字符串，用 .format() 或 % 插入
+css_template = """
+<style>
+{bg_css}
+
+.stApp {{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #222;
+    line-height: 1.7;
+}}
+
+#MainMenu, header, footer {{visibility: hidden;}}
+
+h1 {{
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.6em;
+    color: #e74c3c;
+    margin: 1.8rem 0 1.4rem;
+    letter-spacing: 1px;
+}}
+
+.quote-box {{
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 620px;
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
+    border: 1px solid #f8f8f8;
+}}
+.quote-text {{
+    font-size: 1.3em;
+    text-align: center;
+    line-height: 1.8;
+    color: #1a1a1a;
+    font-weight: 500;
+}}
+
+.stButton > button {{
+    background: transparent;
+    border: none;
+    font-size: 1.6em;
+    color: #e74c3c;
+    margin: 1.2rem auto;
+    display: block;
+    transition: all 0.25s ease;
+    width: auto;
+    height: auto;
+    padding: 0;
+}}
+.stButton > button:hover {{
+    color: #c0392b;
+    transform: scale(1.2);
+}}
+.stButton > button:active {{
+    transform: scale(1.05);
+}}
+
+.personal {{
+    background: white;
+    padding: 1.8rem;
+    border-radius: 16px;
+    margin: 2rem auto;
+    max-width: 620px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
+    font-size: 1.2em;
+    color: #1a1a1a;
+    font-weight: 500;
+}}
+
+.footer {{
+    text-align: center;
+    color: #aaa;
+    font-size: 0.95em;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}}
+</style>
+"""
+
+# 注入 bg_css
+full_css = css_template.format(bg_css=bg_css)
+st.markdown(full_css, unsafe_allow_html=True)
 
 # ======================
-# 内容区（在 overlay 内）
-# ======================
-st.markdown(
-    """
-    <style>
-    .stApp {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        color: #222;
-        line-height: 1.7;
-    }
-    #MainMenu, header, footer {visibility: hidden;}
-    
-    h1 {
-        text-align: center;
-        font-weight: 600;
-        font-size: 1.6em;
-        color: #e74c3c;
-        margin: 1.8rem 0 1.4rem;
-        letter-spacing: 1px;
-    }
-    
-    .quote-box {
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 2rem auto;
-        max-width: 620px;
-        box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
-        border: 1px solid #f8f8f8;
-    }
-    .quote-text {
-        font-size: 1.3em;
-        text-align: center;
-        line-height: 1.8;
-        color: #1a1a1a;
-        font-weight: 500;
-    }
-    
-    .stButton > button {
-        background: transparent;
-        border: none;
-        font-size: 1.6em;
-        color: #e74c3c;
-        margin: 1.2rem auto;
-        display: block;
-        transition: all 0.25s ease;
-        width: auto;
-        height: auto;
-        padding: 0;
-    }
-    .stButton > button:hover {
-        color: #c0392b;
-        transform: scale(1.2);
-    }
-    .stButton > button:active {
-        transform: scale(1.05);
-    }
-    
-    .personal {
-        background: white;
-        padding: 1.8rem;
-        border-radius: 16px;
-        margin: 2rem auto;
-        max-width: 620px;
-        text-align: center;
-        box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
-        font-size: 1.2em;
-        color: #1a1a1a;
-        font-weight: 500;
-    }
-    
-    .footer {
-        text-align: center;
-        color: #aaa;
-        font-size: 0.95em;
-        margin-top: 2.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid #f0f0f0;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.title("刘家彤天天开心")
-
 # 语录库
+# ======================
 quotes = [
     "今天也要开心呀！",
     "你笑起来真好看。",
@@ -156,7 +159,12 @@ quotes = [
     "你就是你，不需要完美。"
 ]
 
-# 切换语录
+# ======================
+# 主内容
+# ======================
+st.markdown(overlay_open, unsafe_allow_html=True)
+st.title("刘家彤天天开心")
+
 if 'current_quote' not in st.session_state:
     st.session_state.current_quote = random.choice(quotes)
 
@@ -164,6 +172,7 @@ if st.button("💖", key="next_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
+# ✅ 这里的 f-string 是安全的，因为 current_quote 是字符串
 st.markdown(f"""
 <div class="quote-box">
     <div class="quote-text">{st.session_state.current_quote}</div>
@@ -185,5 +194,4 @@ Made for you • 愿你天天开心
 </div>
 """, unsafe_allow_html=True)
 
-# 关闭 overlay
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(overlay_close, unsafe_allow_html=True)
