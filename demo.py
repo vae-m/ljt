@@ -1,157 +1,208 @@
 import streamlit as st
-import time
 import random
+import time
+import os
 
 # ======================
 # 页面配置
 # ======================
 st.set_page_config(
-    page_title="致刘家彤",
-    page_icon="💌",
+    page_title="peaceful love",
+    page_icon="📜",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # ======================
-# 自定义 CSS 样式（关键！让界面变好看）
+# 极简 CSS：新增图片样式（柔和、不抢眼）
 # ======================
 st.markdown("""
 <style>
-    /* 全局背景：淡粉色渐变 */
     .stApp {
-        background: linear-gradient(135deg, #fff9f9 0%, #f0f8ff 100%);
-        font-family: 'Microsoft YaHei', 'STHeiti', sans-serif;
+        background: #fdf6f0;
+        font-family: "STKaiti", "KaiTi", "华文楷体", serif;
+        color: #3e3e3e;
+        line-height: 1.7;
     }
     
-    /* 标题样式 */
+    #MainMenu, header, footer {visibility: hidden;}
+    
     h1 {
-        color: #e74c3c !important;
         text-align: center;
-        font-weight: 600;
-        margin-bottom: 10px;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        font-weight: 400;
+        font-size: 1.4em;
+        color: #5a5a5a;
+        margin: 2rem 0 1.5rem;
+        letter-spacing: 2px;
     }
     
-    h2 {
-        color: #c0392b !important;
-        text-align: center;
-        font-weight: 500;
+    .quote-box {
+        background: rgba(255, 250, 240, 0.6);
+        border: 1px solid #e8e0d5;
+        border-radius: 4px;
+        padding: 1.4rem;
+        margin: 1.8rem 0;
+        font-size: 1.05em;
+        position: relative;
+    }
+    .quote-box::before {
+        content: "“";
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        font-size: 2.2em;
+        color: #c9b8a5;
+        font-family: serif;
+    }
+    .quote-box::after {
+        content: "”";
+        position: absolute;
+        bottom: -20px;
+        right: 15px;
+        font-size: 2.2em;
+        color: #c9b8a5;
+        font-family: serif;
     }
     
-    /* 卡片样式 */
-    .quote-card {
-        background: white;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        margin: 20px 0;
-        border-left: 4px solid #e74c3c;
-        transition: transform 0.3s ease;
-    }
-    .quote-card:hover {
-        transform: translateY(-3px);
-    }
-    
-    .quote-text {
-        font-size: 1.2em;
-        line-height: 1.6;
-        color: #2c3e50;
-        font-style: italic;
-    }
-    
-    .quote-author {
+    .author {
         text-align: right;
-        color: #7f8c8d;
-        font-weight: 500;
-        margin-top: 10px;
+        font-size: 0.9em;
+        color: #8a8a8a;
+        margin-top: 0.8rem;
     }
     
-    /* 按钮样式 */
     .stButton > button {
-        background: linear-gradient(to right, #e74c3c, #e67e22);
-        color: white;
+        background: transparent;
         border: none;
-        border-radius: 30px;
-        padding: 10px 25px;
-        font-size: 1.1em;
-        font-weight: 600;
-        box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        color: #8a8a8a;
+        font-size: 0.95em;
+        padding: 0.4rem 0;
+        margin: 0.5rem auto;
+        display: block;
         transition: all 0.3s ease;
     }
     .stButton > button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(231, 76, 60, 0.4);
+        color: #5a5a5a;
+        transform: scale(1.02);
     }
     
-    /* 隐藏 Streamlit 默认菜单 */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    .personal {
+        font-family: "STXingkai", "华文行楷", cursive;
+        font-size: 1.1em;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: #4a4a4a;
+        opacity: 0.9;
+    }
+    
+    /* 图片容器：圆角、阴影、居中 */
+    .photo-container {
+        text-align: center;
+        margin: 1.8rem 0;
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+    .photo-container img {
+        max-width: 90%;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #f0e8e0;
+    }
+    
+    .footer {
+        text-align: center;
+        color: #b0a89e;
+        font-size: 0.8em;
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0e8e0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ======================
-# 王小波经典语录（精选）
+# 王小波语录
 # ======================
 quotes = [
-    "你好哇，李银河！——今天我感到非常烦闷，我想念你。",
-    "我会不爱你吗？不爱你？不会。爱你就像爱生命。",
-    "你要是愿意，我就永远爱你；你要是不愿意，我就永远相思。",
-    "我和你就像两个小孩子，围着一个神秘的果酱罐，一点一点地尝它，看看里面有多少甜。",
-    "不管我本人多么平庸，我总觉得对你的爱很美。",
-    "你是非常可爱的人，真应该遇到最好的人，我也真希望我就是。",
     "静下来想你，觉得一切都美好得不可思议。",
-    "我希望我们是一对海豚，永远在水里游，永远不分离。"
+    "我和你就像两个小孩子，围着一个神秘的果酱罐，一点一点地尝它。",
+    "你是非常可爱的人，真应该遇到最好的人，我也真希望我就是。",
+    "不管我本人多么平庸，我总觉得对你的爱很美。",
+    "我希望我们是一对海豚，永远在水里游，永远不分离。",
+    "你要是愿意，我就永远爱你；你要是不愿意，我就永远相思。",
+    "我们应当在一起，否则就太伤天害理了。",
+    "你的名字，是我见过最短的情诗。"
 ]
 
 # ======================
-# 主界面
+# 主内容
 # ======================
-st.title("💌 致 刘家彤")
+st.title("love in peace")
 
-st.markdown("<h2>爱你就像爱生命</h2>", unsafe_allow_html=True)
+# 随机语录
+if 'current_quote' not in st.session_state:
+    st.session_state.current_quote = random.choice(quotes)
 
-# 显示随机语录卡片
-if st.button("✨ 点我，换一句王小波的情话"):
-    quote = random.choice(quotes)
-else:
-    quote = quotes[0]  # 默认第一句
+if st.button("·"):
+    st.session_state.current_quote = random.choice(quotes)
+    st.rerun()
 
 st.markdown(f"""
-<div class="quote-card">
-    <div class="quote-text">“{quote}”</div>
-    <div class="quote-author">—— 王小波《爱你就像爱生命》</div>
+<div class="quote-box">
+    {st.session_state.current_quote}
+    <div class="author">—— 王小波</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 专属告白区
-st.markdown("### 💌 给刘家彤的话")
+# 专属文字
 st.markdown("""
-<div style="background:white; padding:20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-    <p style="font-size:1.1em; line-height:1.7; color:#2c3e50;">
-    家彤：<br>
-    遇见你，是我今生最美的意外。<br>
-    你的笑容像春天的风，吹散我所有的阴霾。<br>
-    愿我们像王小波和李银河一样，<br>
-    在平凡的日子里，彼此照亮，彼此深爱。<br><br>
-    <strong>我爱你，就像爱生命。</strong>
-    </p>
+<div class="personal">
+致家彤：<br>
+有些话不必说尽，<br>
+如同月光不必照亮整片海。<br>
+但你知道，<br>
+我在。
 </div>
 """, unsafe_allow_html=True)
 
-# 心跳动画（可选）
-if st.button("❤️ 点击查看我的心跳"):
+# ======================
+# 含蓄的「查看美照」功能
+# ======================
+st.markdown("<div style='text-align:center; margin:1.5rem 0; color:#a89e95;'>· · ·</div>", unsafe_allow_html=True)
+
+if st.button("· ·"):
+    # 检查图片是否存在
+    photo_path = "picture/01.jpg"
+    if os.path.exists(photo_path):
+        st.markdown('<div class="photo-container">', unsafe_allow_html=True)
+        st.image(photo_path, use_column_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(
+            '<div style="text-align:center; color:#b0a89e; font-size:0.95em; margin:1rem 0;">'
+            '照片正在路上…</div>',
+            unsafe_allow_html=True
+        )
+
+# 心跳彩蛋（保留）
+if st.button("·"):
     placeholder = st.empty()
-    for i in range(5):
-        placeholder.markdown(f"<h1 style='text-align:center; color:#e74c3c;'>❤️ ❤️ ❤️</h1>", unsafe_allow_html=True)
-        time.sleep(0.3)
-        placeholder.markdown(f"<h1 style='text-align:center; color:#e74c3c;'> 💓 💓 💓 </h1>", unsafe_allow_html=True)
-        time.sleep(0.3)
+    for _ in range(3):
+        placeholder.markdown("<div style='text-align:center; font-size:1.2em; color:#a89e95;'>…</div>", unsafe_allow_html=True)
+        time.sleep(0.4)
+        placeholder.empty()
+        time.sleep(0.2)
+    placeholder.markdown("<div style='text-align:center; font-size:1.2em; color:#a89e95;'>❤</div>", unsafe_allow_html=True)
+    time.sleep(1)
     placeholder.empty()
 
 # 页脚
 st.markdown("""
-<br><br>
-<div style="text-align:center; color:#95a5a6; font-size:0.9em;">
-    Made with 💖 for 刘家彤 | 灵感来自王小波《爱你就像爱生命》
+<div class="footer">
+我见众生皆草木，唯有见你是青山。<br>
+—— 灵感源自《爱你就像爱生命》
 </div>
 """, unsafe_allow_html=True)
