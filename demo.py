@@ -1,215 +1,197 @@
 import streamlit as st
 import random
-import time
 import os
+import base64
 
 # ======================
 # 页面配置
 # ======================
 st.set_page_config(
-    page_title="quiet affection",
-    page_icon="🤍",
+    page_title="刘家彤天天开心",
+    page_icon="💖",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # ======================
-# 检查背景图是否存在
+# 读取背景图
 # ======================
-background_path = "picture/01.jpg"
-has_background = os.path.exists(background_path)
+bg_image_path = "picture/01.jpg"
+bg_image_b64 = None
+
+if os.path.exists(bg_image_path):
+    try:
+        with open(bg_image_path, "rb") as f:
+            bg_image_b64 = base64.b64encode(f.read()).decode()
+    except:
+        bg_image_b64 = None
 
 # ======================
-# CSS：背景图 + 极简 UI
+# 构建 CSS（不用外层 f-string！）
 # ======================
-if has_background:
-    # 有背景图：使用伪元素叠加柔光层
-    bg_style = f"""
+if bg_image_b64:
+    bg_css = f'''
     .stApp {{
-        background-image: url('picture/01.jpg');
+        background-image: url("data:image/jpg;base64,{bg_image_b64}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-        position: relative;
     }}
-    .stApp::before {{
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(253, 246, 240, 0.85); /* 米白柔光层 */
-        z-index: -1;
+    .content-overlay {{
+        background: rgba(252, 252, 252, 0.93);
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
     }}
-    """
+    '''
+    overlay_open = '<div class="content-overlay">'
+    overlay_close = '</div>'
 else:
-    # 无背景图：纯色背景
-    bg_style = """
-    .stApp {
-        background: #fdf6f0;
-    }
-    """
+    bg_css = ".stApp { background: #fcfcfc; }"
+    overlay_open = ''
+    overlay_close = ''
 
-st.markdown(f"""
+# ✅ 关键：CSS 模板用普通字符串，用 .format() 或 % 插入
+css_template = """
 <style>
-    {bg_style}
-    
-    /* 全局字体 */
-    .stApp {{
-        font-family: "STKaiti", "KaiTi", "华文楷体", serif;
-        color: #3e3e3e;
-        line-height: 1.7;
-    }}
-    
-    /* 隐藏默认元素 */
-    #MainMenu, header, footer {{visibility: hidden;}}
-    
-    /* 标题 */
-    h1 {{
-        text-align: center;
-        font-weight: 400;
-        font-size: 1.3em;
-        color: #5a5a5a;
-        margin: 2.2rem 0 1.6rem;
-        letter-spacing: 1.5px;
-        text-shadow: 0 1px 2px rgba(255,255,255,0.7);
-    }}
-    
-    /* 语录卡片 */
-    .quote-box {{
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(4px);
-        border-radius: 8px;
-        padding: 1.6rem;
-        margin: 1.8rem auto;
-        max-width: 600px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        position: relative;
-        border: 1px solid rgba(230, 220, 210, 0.5);
-    }}
-    .quote-text {{
-        font-size: 1.1em;
-        text-align: center;
-        line-height: 1.8;
-    }}
-    .quote-author {{
-        text-align: right;
-        font-size: 0.95em;
-        color: #8a8a8a;
-        margin-top: 1rem;
-        font-style: normal;
-    }}
-    
-    /* 按钮：极简圆点 */
-    .stButton > button {{
-        background: transparent;
-        border: none;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        margin: 0.8rem auto;
-        display: block;
-        position: relative;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 0 2px rgba(138, 138, 138, 0.3);
-    }}
-    .stButton > button:hover {{
-        background: rgba(138, 138, 138, 0.15);
-        transform: scale(1.15);
-        box-shadow: 0 0 0 3px rgba(138, 138, 138, 0.5);
-    }}
-    
-    /* 专属文字 */
-    .personal {{
-        font-family: "STXingkai", "华文行楷", cursive;
-        font-size: 1.15em;
-        text-align: center;
-        margin: 1.8rem auto;
-        max-width: 600px;
-        color: #4a4a4a;
-        opacity: 0.92;
-        background: rgba(255, 255, 255, 0.7);
-        padding: 1.2rem;
-        border-radius: 8px;
-        backdrop-filter: blur(4px);
-    }}
-    
-    /* 页脚 */
-    .footer {{
-        text-align: center;
-        color: #a89e95;
-        font-size: 0.85em;
-        margin-top: 3rem;
-        padding-top: 1.2rem;
-        border-top: 1px solid rgba(240, 232, 224, 0.6);
-    }}
+{bg_css}
+
+.stApp {{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #222;
+    line-height: 1.7;
+}}
+
+#MainMenu, header, footer {{visibility: hidden;}}
+
+h1 {{
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.6em;
+    color: #e74c3c;
+    margin: 1.8rem 0 1.4rem;
+    letter-spacing: 1px;
+}}
+
+.quote-box {{
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 620px;
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
+    border: 1px solid #f8f8f8;
+}}
+.quote-text {{
+    font-size: 1.3em;
+    text-align: center;
+    line-height: 1.8;
+    color: #1a1a1a;
+    font-weight: 500;
+}}
+
+.stButton > button {{
+    background: transparent;
+    border: none;
+    font-size: 1.6em;
+    color: #e74c3c;
+    margin: 1.2rem auto;
+    display: block;
+    transition: all 0.25s ease;
+    width: auto;
+    height: auto;
+    padding: 0;
+}}
+.stButton > button:hover {{
+    color: #c0392b;
+    transform: scale(1.2);
+}}
+.stButton > button:active {{
+    transform: scale(1.05);
+}}
+
+.personal {{
+    background: white;
+    padding: 1.8rem;
+    border-radius: 16px;
+    margin: 2rem auto;
+    max-width: 620px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
+    font-size: 1.2em;
+    color: #1a1a1a;
+    font-weight: 500;
+}}
+
+.footer {{
+    text-align: center;
+    color: #aaa;
+    font-size: 0.95em;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}}
 </style>
-""", unsafe_allow_html=True)
+"""
+
+# 注入 bg_css
+full_css = css_template.format(bg_css=bg_css)
+st.markdown(full_css, unsafe_allow_html=True)
 
 # ======================
-# 多元语录库（含蓄、温柔、不尴尬）
+# 语录库
 # ======================
 quotes = [
-    # 王小波
-    ("静下来想你，觉得一切都美好得不可思议。", "王小波"),
-    ("我和你就像两个小孩子，围着一个神秘的果酱罐，一点一点地尝它。", "王小波"),
-    ("不管我本人多么平庸，我总觉得对你的爱很美。", "王小波"),
-    
-    # 木心
-    ("从前的日色变得慢，车，马，邮件都慢，一生只够爱一个人。", "木心"),
-    ("你是我的，半截的诗，不许别人更改一个字。", "木心"),
-    
-    # 里尔克（冯至译）
-    ("我认出风暴而激动如大海。", "里尔克"),
-    ("有何胜利可言？挺住意味着一切。", "里尔克"),
-    
-    # 中国古诗
-    ("山有木兮木有枝，心悦君兮君不知。", "《越人歌》"),
-    ("愿我如星君如月，夜夜流光相皎洁。", "范成大"),
-    ("晓看天色暮看云，行也思君，坐也思君。", "唐寅"),
-    
-    # 现代温柔短句
-    ("世界很大，幸好有你。", "佚名"),
-    ("遇见你，是我今生最美的意外。", "佚名"),
-    ("你站在桥上看风景，看风景的人在楼上看你。", "卞之琳"),
-    ("我见众生皆草木，唯有见你是青山。", "佚名"),
-    ("你的名字，是我见过最短的情诗。", "佚名")
+    "今天也要开心呀！",
+    "你笑起来真好看。",
+    "希望你每天都被温柔对待。",
+    "累了就休息，别太辛苦自己。",
+    "你值得所有美好。",
+    "今天的你，也很棒！",
+    "记得多喝水，按时吃饭。",
+    "世界很大，但你很重要。",
+    "开心是一种选择，你选对了。",
+    "愿你眼里有光，心中有爱。",
+    "平凡的日子，也因你而闪亮。",
+    "慢慢来，一切都来得及。",
+    "你开心，我就开心。",
+    "今天有什么好事发生吗？",
+    "你就是你，不需要完美。"
 ]
 
 # ======================
 # 主内容
 # ======================
-st.title("quiet affection")
+st.markdown(overlay_open, unsafe_allow_html=True)
+st.title("刘家彤天天开心")
 
-# 随机语录
 if 'current_quote' not in st.session_state:
     st.session_state.current_quote = random.choice(quotes)
 
-# 按钮：切换语录（唯一 key）
-if st.button("", key="next_quote"):  # 按钮文字为空，只显示圆点
+if st.button("💖", key="next_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
-quote_text, author = st.session_state.current_quote
+# ✅ 这里的 f-string 是安全的，因为 current_quote 是字符串
 st.markdown(f"""
 <div class="quote-box">
-    <div class="quote-text">{quote_text}</div>
-    <div class="quote-author">—— {author}</div>
+    <div class="quote-text">{st.session_state.current_quote}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 专属文字
 st.markdown("""
 <div class="personal">
-致家彤：<br>
-有些话不必说尽，<br>
-如同月光不必照亮整片海。<br>
-但你知道，<br>
-我在。
+家彤：<br>
+我只是希望你每天都能开开心心的。<br>
+如果累了，就看看这里。<br>
+我一直都在。
 </div>
 """, unsafe_allow_html=True)
 
-# 页脚
 st.markdown("""
 <div class="footer">
-In silence, I love you.<br>
+Made for you • 愿你天天开心
 </div>
 """, unsafe_allow_html=True)
+
+st.markdown(overlay_close, unsafe_allow_html=True)
