@@ -7,14 +7,14 @@ import base64
 # 页面配置
 # ======================
 st.set_page_config(
-    page_title="刘家彤天天开心",
-    page_icon="💖",
+    page_title="朵朵大王天天开心",
+    page_icon="👑",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # ======================
-# 读取背景图
+# 读取背景图（Base64 确保云端显示）
 # ======================
 bg_image_path = "picture/01.jpg"
 bg_image_b64 = None
@@ -27,119 +27,99 @@ if os.path.exists(bg_image_path):
         bg_image_b64 = None
 
 # ======================
-# 构建 CSS（不用外层 f-string！）
+# CSS：文字直接叠加在图片上，无白框
 # ======================
 if bg_image_b64:
-    bg_css = f'''
+    bg_style = f"""
     .stApp {{
         background-image: url("data:image/jpg;base64,{bg_image_b64}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
+        position: relative;
+        color: white; /* 默认文字白色 */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        line-height: 1.7;
     }}
-    .content-overlay {{
-        background: rgba(252, 252, 252, 0.93);
-        min-height: 100vh;
-        padding: 20px;
-        box-sizing: border-box;
-    }}
-    '''
-    overlay_open = '<div class="content-overlay">'
-    overlay_close = '</div>'
+    """
 else:
-    bg_css = ".stApp { background: #fcfcfc; }"
-    overlay_open = ''
-    overlay_close = ''
+    bg_style = ".stApp { background: #222; color: white; }"
 
-# ✅ 关键：CSS 模板用普通字符串，用 .format() 或 % 插入
-css_template = """
+st.markdown(f"""
 <style>
-{bg_css}
-
-.stApp {{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    color: #222;
-    line-height: 1.7;
-}}
-
-#MainMenu, header, footer {{visibility: hidden;}}
-
-h1 {{
-    text-align: center;
-    font-weight: 600;
-    font-size: 1.6em;
-    color: #e74c3c;
-    margin: 1.8rem 0 1.4rem;
-    letter-spacing: 1px;
-}}
-
-.quote-box {{
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    margin: 2rem auto;
-    max-width: 620px;
-    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
-    border: 1px solid #f8f8f8;
-}}
-.quote-text {{
-    font-size: 1.3em;
-    text-align: center;
-    line-height: 1.8;
-    color: #1a1a1a;
-    font-weight: 500;
-}}
-
-.stButton > button {{
-    background: transparent;
-    border: none;
-    font-size: 1.6em;
-    color: #e74c3c;
-    margin: 1.2rem auto;
-    display: block;
-    transition: all 0.25s ease;
-    width: auto;
-    height: auto;
-    padding: 0;
-}}
-.stButton > button:hover {{
-    color: #c0392b;
-    transform: scale(1.2);
-}}
-.stButton > button:active {{
-    transform: scale(1.05);
-}}
-
-.personal {{
-    background: white;
-    padding: 1.8rem;
-    border-radius: 16px;
-    margin: 2rem auto;
-    max-width: 620px;
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
-    font-size: 1.2em;
-    color: #1a1a1a;
-    font-weight: 500;
-}}
-
-.footer {{
-    text-align: center;
-    color: #aaa;
-    font-size: 0.95em;
-    margin-top: 2.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #f0f0f0;
-}}
+    {bg_style}
+    
+    #MainMenu, header, footer {{visibility: hidden;}}
+    
+    h1 {{
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.8em;
+        color: white;
+        margin: 2rem 0 1.5rem;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    }}
+    
+    .quote-text {{
+        font-size: 1.3em;
+        text-align: center;
+        line-height: 1.8;
+        color: white;
+        font-weight: 500;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+    }}
+    
+    /* 按钮：透明爱心，带阴影 */
+    .stButton > button {{
+        background: transparent;
+        border: none;
+        font-size: 1.6em;
+        color: white;
+        margin: 1.2rem auto;
+        display: block;
+        transition: all 0.25s ease;
+        width: auto;
+        height: auto;
+        padding: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }}
+    .stButton > button:hover {{
+        color: #ffcccb;
+        transform: scale(1.2);
+    }}
+    .stButton > button:active {{
+        transform: scale(1.05);
+    }}
+    
+    .personal {{
+        font-size: 1.1em;
+        text-align: center;
+        color: white;
+        font-weight: 500;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+    }}
+    
+    .footer {{
+        text-align: center;
+        color: #ddd;
+        font-size: 0.9em;
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.3);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }}
 </style>
-"""
-
-# 注入 bg_css
-full_css = css_template.format(bg_css=bg_css)
-st.markdown(full_css, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ======================
-# 语录库
+# 语录库（温柔自然）
 # ======================
 quotes = [
     "今天也要开心呀！",
@@ -160,11 +140,11 @@ quotes = [
 ]
 
 # ======================
-# 主内容
+# 主内容（直接叠加在图片上）
 # ======================
-st.markdown(overlay_open, unsafe_allow_html=True)
-st.title("刘家彤天天开心")
+st.title("朵朵大王天天开心")
 
+# 切换语录
 if 'current_quote' not in st.session_state:
     st.session_state.current_quote = random.choice(quotes)
 
@@ -172,26 +152,25 @@ if st.button("💖", key="next_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
-# ✅ 这里的 f-string 是安全的，因为 current_quote 是字符串
 st.markdown(f"""
-<div class="quote-box">
-    <div class="quote-text">{st.session_state.current_quote}</div>
+<div class="quote-text">
+    {st.session_state.current_quote}
 </div>
 """, unsafe_allow_html=True)
 
+# 专属文字
 st.markdown("""
 <div class="personal">
-家彤：<br>
+朵朵大王：<br>
 我只是希望你每天都能开开心心的。<br>
 如果累了，就看看这里。<br>
 我一直都在。
 </div>
 """, unsafe_allow_html=True)
 
+# 页脚
 st.markdown("""
 <div class="footer">
 Made for you • 愿你天天开心
 </div>
 """, unsafe_allow_html=True)
-
-st.markdown(overlay_close, unsafe_allow_html=True)
