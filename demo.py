@@ -15,7 +15,7 @@ st.set_page_config(
 # ======================
 # 检查图片
 # ======================
-bg_path = "picture/01.jpg"
+bg_path = "picture/demo2.jpg"
 image_exists = os.path.exists(bg_path)
 
 # ======================
@@ -139,12 +139,12 @@ quotes = [
     "今天的你，也很棒！",
     "记得多喝水，按时吃饭。",
     "世界很大，但你很重要。",
-    "开心是一种选择，你选对了。",
+    "我爱你有种左灯右行的冲突。",
     "愿你眼里有光，心中有爱。",
-    "平凡的日子，也因你而闪亮.",
+    "我的人生暗淡如水，谢谢你照进来的光。",
     "慢慢来，一切都来得及。",
-    "你开心，我就开心呀。",
-    "今天有什么好事发生吗？",
+    "努力挣钱，给朵朵花",
+    "谢谢你在世界的角落里把我找到",
     "我喜欢的是完整的你。"
 ]
 
@@ -159,7 +159,7 @@ if st.button("💖", key="next_quote"):
 st.markdown(f'<div class="quote">{st.session_state.current_quote}</div>', unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="personal">朵朵大王：<br>我只是希望你每天都能开开心心的。<br>如果累了，就看看这里。<br>我一直都在。</div>',
+    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>如果累了，就休息一下。<br>我会一直等着朵朵的。</div>',
     unsafe_allow_html=True
 )
 
@@ -170,4 +170,5 @@ if image_exists:
     st.markdown('</div></div>', unsafe_allow_html=True)
 else:
     st.markdown('</div>', unsafe_allow_html=True)
+
 
