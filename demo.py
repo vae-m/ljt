@@ -20,74 +20,169 @@ st.markdown(
     <style>
     #MainMenu, header, footer {visibility: hidden;}
     
-    /* 所有文字内容水平居中 */
-    .centered-content {
-        text-align: center;
-        max-width: 800px;
+    /* 柔和背景（无图时使用） */
+    .main-content {
+        background: linear-gradient(135deg, #fff9fb, #f0f7ff);
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 700px;
         margin: 0 auto;
-        padding: 0 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    
+    /* 图片样式 */
+    .stImage > img {
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        display: block;
+        margin: 0 auto 24px auto;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .stImage > img:hover {
+        transform: scale(1.02);
+    }
+    
+    /* 文字内容居中 */
+    .centered-text {
+        text-align: center;
+        padding: 0 16px;
     }
     
     .title {
-        font-weight: 600;
-        font-size: 1.8em;
-        margin: 1rem 0;
-        color: #333;
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        font-weight: 700;
+        font-size: 2.0em;
+        margin: 1.2rem 0;
+        color: #e91e63;
+        animation: fadeInDown 1s ease-out;
     }
     
     .quote {
-        font-size: 1.3em;
+        font-size: 1.4em;
         line-height: 1.7;
-        margin: 1.5rem 0;
-        color: #222;
+        margin: 1.6rem 0;
+        color: #333;
+        font-weight: 500;
     }
     
     .personal {
-        font-size: 1.1em;
-        margin: 1.5rem 0;
-        color: #444;
-        line-height: 1.6;
+        font-size: 1.15em;
+        margin: 1.6rem 0;
+        color: #555;
+        line-height: 1.7;
+    }
+    
+    .fortune {
+        background: #fff8e1;
+        border-left: 4px solid #ffc107;
+        padding: 12px;
+        border-radius: 0 8px 8px 0;
+        margin: 1.2rem auto;
+        max-width: 90%;
+        font-size: 1.05em;
+        color: #5d4037;
     }
     
     .footer {
-        color: #777;
-        font-size: 0.9em;
+        color: #888;
+        font-size: 0.95em;
         margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
     }
     
-    /* 按钮居中 */
+    /* 按钮 */
     .stButton > button {
         display: block;
-        margin: 1.5rem auto;
-        font-size: 1.6em;
+        margin: 1.8rem auto;
+        font-size: 1.8em;
         border: none;
         background: transparent;
-        color: #e74c3c;
+        color: #e91e63;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.2s;
     }
     .stButton > button:hover {
+        color: #d81b60;
+        transform: scale(1.2);
+    }
+    
+    /* 动画 */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* 爱心点击特效 */
+    .heart {
+        position: absolute;
+        font-size: 24px;
         color: #e91e63;
-        transform: scale(1.1);
-        transition: transform 0.2s;
+        pointer-events: none;
+        animation: floatUp 1.2s forwards;
+        z-index: 1000;
+    }
+    @keyframes floatUp {
+        0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-80px) scale(1.5);
+        }
     }
     </style>
+    
+    <script>
+    // 点击图片出爱心
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG') {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.className = 'heart';
+            heart.style.left = (e.pageX - 12) + 'px';
+            heart.style.top = (e.pageY - 12) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 1200);
+        }
+    });
+    </script>
     """,
     unsafe_allow_html=True
 )
 
 # ======================
-# 显示图片（左右居中）
+# 显示图片
 # ======================
 bg_path = "picture/demo2.jpg"
-if os.path.exists(bg_path):
-    st.image(bg_path, use_container_width=True)  # 自动居中，宽度适配
+image_exists = os.path.exists(bg_path)
+
+if image_exists:
+    st.image(bg_path, use_container_width=True)
 else:
-    st.warning("图片 picture/demo2.jpg 未找到，仅显示文字内容。")
+    # 无图时加一点装饰
+    st.markdown('<div style="text-align:center; margin-bottom:20px; color:#999;">🖼️ 图片未找到</div>', unsafe_allow_html=True)
 
 # ======================
-# 文字内容（全部左右居中）
+# 主内容容器
 # ======================
-st.markdown('<div class="centered-content">', unsafe_allow_html=True)
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
+st.markdown('<div class="centered-text">', unsafe_allow_html=True)
 
+# 标题
 st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_html=True)
 
 # 语录库
@@ -118,13 +213,33 @@ if st.button("💖", key="next_quote"):
     st.session_state.current_quote = random.choice(quotes)
     st.rerun()
 
-st.markdown(f'<div class="quote">{st.session_state.current_quote}</div>', unsafe_allow_html=True)
+# 显示语录
+st.markdown(f'<div class="quote">“{st.session_state.current_quote}”</div>', unsafe_allow_html=True)
 
+# 专属寄语
 st.markdown(
     '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>如果累了，就休息一下。<br>我会一直等着朵朵的。</div>',
     unsafe_allow_html=True
 )
 
-st.markdown('<div class="footer">Made for you • 愿你天天开心</div>', unsafe_allow_html=True)
+# ✨ 新增：每日小惊喜（朵朵运势）
+fortunes = [
+    "今天会有小惊喜哦～",
+    "朵朵今天会收到好消息！",
+    "记得对自己好一点 ❤️",
+    "今天适合吃甜品！",
+    "有人正在偷偷想你呢～",
+    "朵朵的笑容是最棒的魔法！",
+    "今天走路会捡到快乐！",
+    "好运正在向你跑来～"
+]
 
-st.markdown('</div>', unsafe_allow_html=True)
+if 'today_fortune' not in st.session_state:
+    st.session_state.today_fortune = random.choice(fortunes)
+
+st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.today_fortune}</div>', unsafe_allow_html=True)
+
+# 页脚
+st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
+
+st.markdown('</div></div>', unsafe_allow_html=True)
