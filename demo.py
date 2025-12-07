@@ -207,18 +207,6 @@ quotes = [
     "我喜欢的是完整的你。"
 ]
 
-# 初始化语录
-if 'current_quote' not in st.session_state:
-    st.session_state.current_quote = random.choice(quotes)
-
-# 切换按钮
-if st.button("💖", key="next_quote"):
-    st.session_state.current_quote = random.choice(quotes)
-    st.rerun()
-
-# 显示语录
-st.markdown(f'<div class="quote">“{st.session_state.current_quote}”</div>', unsafe_allow_html=True)
-
 # 专属寄语
 st.markdown(
     '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>天天开心，永远幸福。<br>我会一直陪着朵朵的。</div>',
@@ -255,12 +243,18 @@ fortunes = [
 if 'today_fortune' not in st.session_state:
     st.session_state.today_fortune = random.choice(fortunes)
 
+# 切换按钮
+if st.button("💖", key="next_quote"):
+    st.session_state.today_fortune = random.choice(fortunes)
+    st.rerun()
+
 st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.today_fortune}</div>', unsafe_allow_html=True)
 
 # 页脚
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
 
 
 
