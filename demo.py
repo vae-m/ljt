@@ -209,35 +209,27 @@ quotes = [
 
 # 专属寄语
 st.markdown(
-    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>天天开心，永远幸福。<br>我会一直陪着朵朵的。</div>',
+    '<div class="personal">朵朵大王：<br>遇见你是我最幸运的事情。<br>总有一天我可以光明正大地向全世界说你是我的女孩。</div>',
     unsafe_allow_html=True
 )
 
 # ✨ 新增：每日小惊喜（朵朵运势）
 fortunes = [
-    "今天会有小惊喜哦～",
-    "朵朵今天会收到好消息！",
-    "记得对自己好一点 ❤️",
-    "今天适合吃甜品！",
-    "有人正在偷偷想你呢～",
-    "朵朵的笑容是最棒的魔法！",
-    "今天走路会捡到快乐！",
-    "好运正在向你跑来～",
-    "你是最好的人",
-    "有你真好",
-    "愿你被这个世界温柔以待。",
+    "你是最好的人呀",
+    "我真的好害怕你生气，能不能不要不理我",
+    "愿你被这个世界温柔以待",
     "她不一样，我喜欢她",
-    "你值得所有美好。",
-    "今天的你，也很棒！",
-    "记得多喝水，按时吃饭。",
-    "世界很大，但你很重要。",
-    "我爱你有种左灯右行的冲突。",
-    "愿你眼里有光，心中有爱。",
-    "我的人生暗淡如水，谢谢你照进来的光。",
-    "慢慢来，一切都来得及。",
+    "你值得所有美好",
+    "选我吧，我不会背叛你",
+    "吃饭的时候注意些，细嚼慢咽",
+    "我不想在你的世界里只是蜻蜓点水",
+    "我爱你有种左灯右行的冲突",
+    "我好累啊，朵朵，我好希望你能够认可我",
+    "我的人生暗淡如水，谢谢你照进来的光",
+    "我的存在会让你不那么匆忙",
     "努力挣钱，给朵朵花",
     "谢谢你在世界的角落里把我找到",
-    "我喜欢的是完整的你。"
+    "好喜欢你啊，朵朵"
 ]
 
 if 'today_fortune' not in st.session_state:
@@ -248,12 +240,13 @@ if st.button("💖", key="next_quote"):
     st.session_state.today_fortune = random.choice(fortunes)
     st.rerun()
 
-st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.today_fortune}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="fortune">✨ 想对朵朵的话：{st.session_state.today_fortune}</div>', unsafe_allow_html=True)
 
 # 页脚
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
 
 
 
