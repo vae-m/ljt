@@ -1,6 +1,8 @@
 import streamlit as st
 import random
 import os
+from PIL import Image
+import io
 
 # ======================
 # 页面配置
@@ -111,6 +113,33 @@ st.markdown(
         transform: scale(1.2);
     }
     
+    /* 图片预览样式 */
+    .image-preview {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+    .image-thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    .image-thumb:hover {
+        transform: scale(1.1);
+        border-color: #e91e63;
+    }
+    .image-thumb.active {
+        border-color: #e91e63;
+        box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+    }
+    
     /* 动画 */
     @keyframes fadeInDown {
         from {
@@ -147,7 +176,7 @@ st.markdown(
     <script>
     // 点击图片出爱心
     document.addEventListener('click', function(e) {
-        if (e.target.tagName === 'IMG') {
+        if (e.target.tagName === 'IMG' && e.target.className !== 'image-thumb') {
             const heart = document.createElement('div');
             heart.innerHTML = '💖';
             heart.className = 'heart';
@@ -171,88 +200,53 @@ image_options = [
     "picture/demo2.jpg",
     "picture/我们.jpg", 
     "picture/01.jpg",
-    "picture/1.jpg",
     "picture/2.jpg"
 ]
+
+# ======================
+# 检查图片有效性的函数
+# ======================
+def is_valid_image(filepath):
+    """检查图片文件是否有效"""
+    if not os.path.exists(filepath):
+        return False
+    
+    try:
+        # 检查文件大小
+        if os.path.getsize(filepath) == 0:
+            return False
+        
+        # 尝试用PIL打开图片
+        with Image.open(filepath) as img:
+            img.verify()  # 验证文件完整性
+        return True
+    except (IOError, SyntaxError, Exception):
+        return False
+
+def get_available_images():
+    """获取所有可用的有效图片"""
+    available = []
+    for img_path in image_options:
+        if is_valid_image(img_path):
+            available.append(img_path)
+    return available
 
 # ======================
 # 初始化session_state
 # ======================
 # 初始化当前图片
 if 'current_image' not in st.session_state:
-    # 从可选图片中随机选择一个，但只选择实际存在的图片
-    available_images = [img for img in image_options if os.path.exists(img)]
+    available_images = get_available_images()
     if available_images:
         st.session_state.current_image = random.choice(available_images)
     else:
         st.session_state.current_image = None
 
-# 初始化切换按钮状态
-if 'show_change_image_button' not in st.session_state:
-    st.session_state.show_change_image_button = False
+# 初始化所有可用图片列表
+if 'available_images' not in st.session_state:
+    st.session_state.available_images = get_available_images()
 
-# ======================
-# 图片显示区域
-# ======================
-# 在侧边栏或顶部添加切换按钮
-with st.sidebar:
-    st.markdown("### 图片设置")
-    if st.button("🔄 随机更换图片", key="change_image"):
-        # 从可选图片中随机选择一个，但只选择实际存在的图片
-        available_images = [img for img in image_options if os.path.exists(img)]
-        if available_images:
-            # 确保不会重复选择同一张图片（除非只有一张可用）
-            current = st.session_state.current_image
-            other_images = [img for img in available_images if img != current]
-            if other_images:
-                st.session_state.current_image = random.choice(other_images)
-            else:
-                st.session_state.current_image = random.choice(available_images)
-            st.rerun()
-
-# ======================
-# 显示图片
-# ======================
-if st.session_state.current_image:
-    image_exists = os.path.exists(st.session_state.current_image)
-    
-    if image_exists:
-        # 显示图片名称（可选）
-        image_name = os.path.basename(st.session_state.current_image)
-        st.markdown(f'<div style="text-align:center; color:#666; margin-bottom:8px; font-size:0.9em;">📸 {image_name}</div>', 
-                   unsafe_allow_html=True)
-        
-        # 显示图片
-        st.image(st.session_state.current_image, use_container_width=True)
-        
-        # 在图片下方添加小提示
-        st.markdown('<div style="text-align:center; color:#999; font-size:0.8em; margin-top:5px;">点击图片有惊喜 💖</div>', 
-                   unsafe_allow_html=True)
-    else:
-        # 如果图片不存在，显示提示并重新选择
-        st.markdown('<div style="text-align:center; margin-bottom:20px; color:#ff6b6b;">🖼️ 图片未找到，正在重新选择...</div>', 
-                   unsafe_allow_html=True)
-        # 重新选择可用的图片
-        available_images = [img for img in image_options if os.path.exists(img)]
-        if available_images:
-            st.session_state.current_image = random.choice(available_images)
-            st.rerun()
-        else:
-            st.session_state.current_image = None
-else:
-    # 没有可用图片时显示替代内容
-    st.markdown('<div style="text-align:center; margin-bottom:20px; color:#999;">🖼️ 暂无可用图片</div>', unsafe_allow_html=True)
-
-# ======================
-# 主内容容器
-# ======================
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
-st.markdown('<div class="centered-text">', unsafe_allow_html=True)
-
-# 标题
-st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_html=True)
-
-# 语录库
+# 初始化语录
 quotes = [
     "你是最好的人",
     "有你真好",
@@ -271,25 +265,10 @@ quotes = [
     "我喜欢的是完整的你。"
 ]
 
-# 初始化语录
 if 'current_quote' not in st.session_state:
     st.session_state.current_quote = random.choice(quotes)
 
-# 切换按钮
-if st.button("💖", key="next_quote"):
-    st.session_state.current_quote = random.choice(quotes)
-    st.rerun()
-
-# 显示语录
-st.markdown(f'<div class="quote">"{st.session_state.current_quote}"</div>', unsafe_allow_html=True)
-
-# 专属寄语
-st.markdown(
-    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>天天开心，永远幸福。<br>我会一直陪着朵朵的。</div>',
-    unsafe_allow_html=True
-)
-
-# ✨ 新增：每日小惊喜（朵朵运势）
+# 初始化运势
 fortunes = [
     "今天会有小惊喜哦～",
     "朵朵今天会收到好消息！",
@@ -304,9 +283,151 @@ fortunes = [
 if 'today_fortune' not in st.session_state:
     st.session_state.today_fortune = random.choice(fortunes)
 
+# ======================
+# 侧边栏 - 图片选择器
+# ======================
+with st.sidebar:
+    st.markdown("### 📸 图片设置")
+    
+    # 显示可用图片状态
+    available_images = st.session_state.available_images
+    if available_images:
+        st.success(f"✅ 找到 {len(available_images)} 张可用图片")
+        
+        # 随机更换按钮
+        if st.button("🔄 随机更换图片", use_container_width=True):
+            current = st.session_state.current_image
+            other_images = [img for img in available_images if img != current]
+            if other_images:
+                st.session_state.current_image = random.choice(other_images)
+            else:
+                st.session_state.current_image = random.choice(available_images)
+            st.rerun()
+        
+        st.markdown("---")
+        st.markdown("### 直接选择图片")
+        
+        # 创建缩略图选择器
+        cols = st.columns(2)
+        for idx, img_path in enumerate(available_images):
+            col_idx = idx % 2
+            img_name = os.path.basename(img_path)
+            
+            # 检查是否是当前选中的图片
+            is_active = (st.session_state.current_image == img_path)
+            
+            # 显示缩略图
+            try:
+                with Image.open(img_path) as img:
+                    # 创建缩略图
+                    img.thumbnail((100, 100))
+                    
+                    # 将图片转换为bytes
+                    img_bytes = io.BytesIO()
+                    img.save(img_bytes, format='JPEG')
+                    
+                    # 显示图片和选择按钮
+                    with cols[col_idx]:
+                        st.image(img_bytes, use_column_width=True, caption=img_name)
+                        if st.button(f"选择", key=f"select_{idx}", use_container_width=True):
+                            st.session_state.current_image = img_path
+                            st.rerun()
+            except:
+                # 如果无法生成缩略图，显示文件名
+                with cols[col_idx]:
+                    st.error(f"❌ {img_name}")
+    else:
+        st.error("❌ 未找到可用图片")
+        st.info("请确保在 picture/ 文件夹中放置以下图片：")
+        st.write("- demo2.jpg")
+        st.write("- 我们.jpg")
+        st.write("- 01.jpg")
+        st.write("- 2.jpg")
+
+# ======================
+# 主页面 - 显示图片
+# ======================
+st.markdown('<div style="text-align:center;">', unsafe_allow_html=True)
+
+if st.session_state.current_image and is_valid_image(st.session_state.current_image):
+    try:
+        # 显示图片名称
+        image_name = os.path.basename(st.session_state.current_image)
+        st.markdown(f'<div style="color:#666; margin-bottom:8px; font-size:0.9em;">📸 {image_name}</div>', 
+                   unsafe_allow_html=True)
+        
+        # 显示主图片
+        st.image(st.session_state.current_image, use_container_width=True)
+        
+        # 显示提示
+        st.markdown('<div style="color:#999; font-size:0.8em; margin-top:5px;">点击图片有惊喜 💖</div>', 
+                   unsafe_allow_html=True)
+        
+    except Exception as e:
+        st.error(f"❌ 无法显示图片: {image_name}")
+        st.info("图片可能已损坏，正在尝试选择其他图片...")
+        
+        # 尝试选择其他图片
+        available_images = get_available_images()
+        if available_images:
+            st.session_state.current_image = random.choice(available_images)
+            st.rerun()
+        else:
+            st.session_state.current_image = None
+else:
+    # 显示替代内容
+    st.markdown("""
+    <div style="text-align:center; padding:40px; background:#f8f9fa; border-radius:12px;">
+        <div style="font-size:48px; margin-bottom:20px;">🖼️</div>
+        <h3 style="color:#666;">暂无可用图片</h3>
+        <p style="color:#999;">请检查图片文件是否存在且格式正确</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ======================
+# 主内容容器
+# ======================
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
+st.markdown('<div class="centered-text">', unsafe_allow_html=True)
+
+# 标题
+st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_html=True)
+
+# 切换语录按钮
+if st.button("💖", key="next_quote"):
+    st.session_state.current_quote = random.choice(quotes)
+    st.rerun()
+
+# 显示语录
+st.markdown(f'<div class="quote">"{st.session_state.current_quote}"</div>', unsafe_allow_html=True)
+
+# 专属寄语
+st.markdown(
+    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>天天开心，永远幸福。<br>我会一直陪着朵朵的。</div>',
+    unsafe_allow_html=True
+)
+
+# 今日运势
 st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.today_fortune}</div>', unsafe_allow_html=True)
 
 # 页脚
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
+# ======================
+# 底部刷新按钮（可选）
+# ======================
+st.markdown("---")
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.button("🔄 刷新页面", use_container_width=True):
+        # 刷新所有状态
+        available_images = get_available_images()
+        if available_images:
+            st.session_state.current_image = random.choice(available_images)
+        st.session_state.current_quote = random.choice(quotes)
+        st.session_state.today_fortune = random.choice(fortunes)
+        st.rerun()
