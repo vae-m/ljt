@@ -55,7 +55,7 @@ st.markdown(
         font-weight: 700;
         font-size: 2.0em;
         margin: 1.2rem 0;
-        color: #BBFFFF;
+        color: #00F5FF;
         animation: fadeInDown 1s ease-out;
     }
     
@@ -246,4 +246,5 @@ st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.to
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
 
