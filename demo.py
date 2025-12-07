@@ -6,7 +6,7 @@ import os
 # 页面配置
 # ======================
 st.set_page_config(
-    page_title="朵朵大王天天开心",
+    page_title="朵朵大王生日快乐！",
     page_icon="👑",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -167,7 +167,7 @@ st.markdown(
 # ======================
 # 显示图片
 # ======================
-bg_path = "picture/demo2.jpg"
+bg_path = "picture/我们.jpg"
 image_exists = os.path.exists(bg_path)
 
 if image_exists:
@@ -187,10 +187,10 @@ st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_ht
 
 # 语录库
 quotes = [
-    "朵朵，你是一个很温柔的人呀！",
-    "朵王记得自信。",
+    "你是最好的人",
+    "有你真好",
     "愿你被这个世界温柔以待。",
-    "累了就休息，别太辛苦自己。",
+    "她不一样，我喜欢她",
     "你值得所有美好。",
     "今天的你，也很棒！",
     "记得多喝水，按时吃饭。",
@@ -218,7 +218,7 @@ st.markdown(f'<div class="quote">“{st.session_state.current_quote}”</div>', 
 
 # 专属寄语
 st.markdown(
-    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>如果累了，就休息一下。<br>我会一直等着朵朵的。</div>',
+    '<div class="personal">朵朵大王：<br>每天每时每刻每分每秒都要开心。<br>天天开心，永远幸福。<br>我会一直陪着朵朵的。</div>',
     unsafe_allow_html=True
 )
 
@@ -243,3 +243,4 @@ st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.to
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
