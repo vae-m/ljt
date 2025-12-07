@@ -164,6 +164,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+
+# ======================
+# 主内容容器
+# ======================
+st.markdown('<div class="main-content">', unsafe_allow_html=True)
+st.markdown('<div class="centered-text">', unsafe_allow_html=True)
+
+# 标题
+st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_html=True)
+
 # ======================
 # 显示图片
 # ======================
@@ -175,15 +186,6 @@ if image_exists:
 else:
     # 无图时加一点装饰
     st.markdown('<div style="text-align:center; margin-bottom:20px; color:#999;">🖼️ 图片未找到</div>', unsafe_allow_html=True)
-
-# ======================
-# 主内容容器
-# ======================
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
-st.markdown('<div class="centered-text">', unsafe_allow_html=True)
-
-# 标题
-st.markdown('<div class="title">朵朵大王天天开心</div>', unsafe_allow_html=True)
 
 # 语录库
 quotes = [
