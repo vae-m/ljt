@@ -234,7 +234,22 @@ fortunes = [
     "有人正在偷偷想你呢～",
     "朵朵的笑容是最棒的魔法！",
     "今天走路会捡到快乐！",
-    "好运正在向你跑来～"
+    "好运正在向你跑来～",
+    "你是最好的人",
+    "有你真好",
+    "愿你被这个世界温柔以待。",
+    "她不一样，我喜欢她",
+    "你值得所有美好。",
+    "今天的你，也很棒！",
+    "记得多喝水，按时吃饭。",
+    "世界很大，但你很重要。",
+    "我爱你有种左灯右行的冲突。",
+    "愿你眼里有光，心中有爱。",
+    "我的人生暗淡如水，谢谢你照进来的光。",
+    "慢慢来，一切都来得及。",
+    "努力挣钱，给朵朵花",
+    "谢谢你在世界的角落里把我找到",
+    "我喜欢的是完整的你。"
 ]
 
 if 'today_fortune' not in st.session_state:
@@ -246,5 +261,6 @@ st.markdown(f'<div class="fortune">✨ 朵朵今日运势：{st.session_state.to
 st.markdown('<div class="footer"><span>👑</span> Made for 朵朵大王 <span>💖</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
 
 
